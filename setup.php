@@ -6,7 +6,7 @@ if (!defined('GLPI_ROOT')) {
 }
 
 // Constantes para facilitar o uso no código
-define('PLUGIN_VITRUVIO_VERSION', '1.0.0');
+define('PLUGIN_VITRUVIO_VERSION', '1.0.1');
 define('PLUGIN_VITRUVIO_DIR', 'vitruvio');
 
 /**

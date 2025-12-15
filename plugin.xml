@@ -2,11 +2,11 @@
 <plugin>
    <key>vitruvio</key>
    <name>Integracao com Vitruvio</name>
-   <version>1.0.0</version>
+   <version>1.0.1</version>
    <description>Um plugin para integrar o GLPI com o Vitruvio para processo de Compra de Suprimentos.</description>
    <authors>
       <author>
-         <name>Ruan Bastos Santos</name>
+         <name>Ruan Bastos</name>
          <email>ruanbastos2013@gmail.com</email>
       </author>
    </authors>
