@@ -9,18 +9,43 @@ $(document).ready(function() {
         // Procura a barra de ações correta
         var container = $('.main-actions');
 
-        if (container.length > 0) {
-            // Cria o botão com o mesmo estilo dos outros
-            var btnHtml = '<button type="button" id="btn-solicitar-material" class="ms-2 mb-2 btn btn-primary answer-action" title="Solicitar Material">' +
-                          '<i class="ti ti-box"></i>' +
-                          '<span class="ms-1">Solicitar Material</span>' +
-                          '</button>';
+if (container.length > 0) {
             
-            container.append(btnHtml);
+            // --- DETECÇÃO DE LAYOUT
+            var dropdownMenu = container.find('.dropdown-menu');
+
+            if (dropdownMenu.length > 0) {
+                console.log("Plugin Vitruvio: Layout Mesclado detectado.");
+
+                var itemHtml = '<li>' +
+                               '<a id="btn-solicitar-material" class="dropdown-item answer-action" href="#" title="Solicitar Material">' +
+                               '<i class="ti ti-box"></i>' +
+                               '<span class="ms-1">Solicitar Material</span>' +
+                               '</a>' +
+                               '</li>';
+                
+                // Adiciona ao final da lista <ul>
+                dropdownMenu.append(itemHtml);
+
+            } else {
+                console.log("Plugin Vitruvio: Layout Separado detectado.");
+
+                var btnHtml = '<button type="button" id="btn-solicitar-material" class="ms-2 mb-2 btn btn-primary answer-action" title="Solicitar Material">' +
+                              '<i class="ti ti-box"></i>' +
+                              '<span class="ms-1">Solicitar Material</span>' +
+                              '</button>';
+                
+                // Adiciona ao final do container
+                container.append(btnHtml);
+            }
             
-            // Evento de clique
+            //EVENTO DE CLIQUE 
             $('#btn-solicitar-material').on('click', function(e) {
                 e.preventDefault();
+                if (dropdownMenu.length > 0) {
+                    $('[data-bs-toggle="dropdown"]').dropdown('hide'); 
+                }
+
                 abrirModalLista();
             });
         }
