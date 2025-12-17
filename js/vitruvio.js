@@ -3,64 +3,34 @@ $(document).ready(function() {
     const AJAX_URL = CFG_GLPI.root_doc + '/plugins/vitruvio/ajax/solicitar_material.php';
 
     function addMaterialButton() {
-        // Evita duplicidade
         if ($('#btn-solicitar-material').length > 0) return;
 
-        // Procura a barra de ações correta
         var container = $('.main-actions');
-
-if (container.length > 0) {
+        if (container.length > 0) {
             
-            // --- DETECÇÃO DE LAYOUT
+            // Lógica de detecção de layout (Mesclado vs Separado)
             var dropdownMenu = container.find('.dropdown-menu');
 
             if (dropdownMenu.length > 0) {
-                console.log("Plugin Vitruvio: Layout Mesclado detectado.");
-
-                var itemHtml = '<li>' +
-                               '<a id="btn-solicitar-material" class="dropdown-item answer-action" href="#" title="Solicitar Material">' +
-                               '<i class="ti ti-box"></i>' +
-                               '<span class="ms-1">Solicitar Material</span>' +
-                               '</a>' +
-                               '</li>';
-                
-                // Adiciona ao final da lista <ul>
+                var itemHtml = '<li><a id="btn-solicitar-material" class="dropdown-item answer-action" href="#" title="Solicitar Material"><i class="ti ti-box"></i><span class="ms-1">Solicitar Material</span></a></li>';
                 dropdownMenu.append(itemHtml);
-
             } else {
-                console.log("Plugin Vitruvio: Layout Separado detectado.");
-
-                var btnHtml = '<button type="button" id="btn-solicitar-material" class="ms-2 mb-2 btn btn-primary answer-action" title="Solicitar Material">' +
-                              '<i class="ti ti-box"></i>' +
-                              '<span class="ms-1">Solicitar Material</span>' +
-                              '</button>';
-                
-                // Adiciona ao final do container
+                var btnHtml = '<button type="button" id="btn-solicitar-material" class="ms-2 mb-2 btn btn-primary answer-action" title="Solicitar Material"><i class="ti ti-box"></i><span class="ms-1">Solicitar Material</span></button>';
                 container.append(btnHtml);
             }
             
-            //EVENTO DE CLIQUE 
             $('#btn-solicitar-material').on('click', function(e) {
                 e.preventDefault();
-                if (dropdownMenu.length > 0) {
-                    $('[data-bs-toggle="dropdown"]').dropdown('hide'); 
-                }
-
+                if (dropdownMenu.length > 0) $('[data-bs-toggle="dropdown"]').dropdown('hide'); 
                 abrirModalLista();
             });
         }
     }
 
-    // Monitora a página para garantir que o botão não suma
-    var observer = new MutationObserver(function(mutations) {
-        addMaterialButton();
-    });
+    var observer = new MutationObserver(function(mutations) { addMaterialButton(); });
     observer.observe(document.body, { childList: true, subtree: true });
-    
-    // Inicia
     addMaterialButton();
 
-    // --- NOVA FUNÇÃO: Janela com Lista de Itens ---
     function abrirModalLista() {
         var params = new URLSearchParams(window.location.search);
         var ticketId = params.get('id');
@@ -71,28 +41,34 @@ if (container.length > 0) {
             return;
         }
 
-        // HTML da janela (Tabela)
+        // HTML da Tabela Atualizado
         const htmlContent = `
             <div style="text-align: left; font-size: 0.9rem;">
-                <p class="mb-2">Adicione os itens que você precisa:</p>
-                <table class="table table-sm" id="tabela-materiais">
-                    <thead>
-                        <tr>
-                            <th width="70%">Item / Material</th>
-                            <th width="20%">Qtd.</th>
-                            <th width="10%"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><input type="text" class="form-control item-nome" placeholder="Ex: Cabo de Rede"></td>
-                            <td><input type="number" class="form-control item-qtd" value="1" min="1"></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <p class="mb-2">Descreva os itens, observações e anexe arquivos se necessário:</p>
+                <div class="table-responsive">
+                    <table class="table table-sm" id="tabela-materiais">
+                        <thead>
+                            <tr>
+                                <th width="35%">Item</th>
+                                <th width="15%">Qtd.</th>
+                                <th width="25%">Obs.</th>
+                                <th width="20%">Anexo</th>
+                                <th width="5%"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" class="form-control form-control-sm item-nome" placeholder="Nome do item"></td>
+                                <td><input type="number" class="form-control form-control-sm item-qtd" value="1" min="1"></td>
+                                <td><input type="text" class="form-control form-control-sm item-obs" placeholder="Detalhes..."></td>
+                                <td><input type="file" class="form-control form-control-sm item-file"></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="btn-add-linha">
-                    <i class="ti ti-plus"></i> Adicionar outro item
+                    <i class="ti ti-plus"></i> Adicionar item
                 </button>
             </div>
         `;
@@ -100,7 +76,7 @@ if (container.length > 0) {
         Swal.fire({
             title: 'Solicitar Material',
             html: htmlContent,
-            width: '600px',
+            width: '800px', 
             showCancelButton: true,
             confirmButtonText: 'Enviar Solicitação',
             cancelButtonText: 'Cancelar',
@@ -113,8 +89,10 @@ if (container.length > 0) {
                 btnAdd.addEventListener('click', () => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td><input type="text" class="form-control item-nome" placeholder="Item..."></td>
-                        <td><input type="number" class="form-control item-qtd" value="1" min="1"></td>
+                        <td><input type="text" class="form-control form-control-sm item-nome" placeholder="Item..."></td>
+                        <td><input type="number" class="form-control form-control-sm item-qtd" value="1" min="1"></td>
+                        <td><input type="text" class="form-control form-control-sm item-obs" placeholder="..."></td>
+                        <td><input type="file" class="form-control form-control-sm item-file"></td>
                         <td><button type="button" class="btn btn-sm btn-ghost-danger btn-remove"><i class="ti ti-trash"></i></button></td>
                     `;
                     tbody.appendChild(tr);
@@ -122,73 +100,64 @@ if (container.length > 0) {
                 });
             },
             showLoaderOnConfirm: true,
-            // AQUI COMEÇA O BLOCO QUE VOCÊ PEDIU
             preConfirm: () => {
-                // 1. Coleta dados da tabela
                 const linhas = document.querySelectorAll('#tabela-materiais tbody tr');
-                let textoFinal = "";
                 
-                linhas.forEach(tr => {
+                // Cria um objeto FormData para enviar arquivos
+                let formData = new FormData();
+                formData.append('tickets_id', ticketId);
+
+                let contagem = 0;
+                let temItem = false;
+
+                linhas.forEach((tr, index) => {
                     const nome = tr.querySelector('.item-nome').value;
-                    const qtd = tr.querySelector('.item-qtd').value;
+                    const qtd  = tr.querySelector('.item-qtd').value;
+                    const obs  = tr.querySelector('.item-obs').value;
+                    const fileInput = tr.querySelector('.item-file');
+
                     if (nome.trim() !== "") {
-                        textoFinal += `- ${nome} (Qtd: ${qtd})\n`;
+                        temItem = true;
+                        // Adiciona os dados como array para o PHP processar
+                        formData.append(`items[${index}][nome]`, nome);
+                        formData.append(`items[${index}][qtd]`, qtd);
+                        formData.append(`items[${index}][obs]`, obs);
+                        
+                        if (fileInput.files.length > 0) {
+                            formData.append(`items[${index}][arquivo]`, fileInput.files[0]);
+                        }
+                        contagem++;
                     }
                 });
 
-                if (textoFinal === "") {
+                if (!temItem) {
                     Swal.showValidationMessage('Adicione pelo menos um item na lista.');
                     return false;
                 }
 
-                // 2. Envia para o PHP
+                // Envia via AJAX com configurações para Upload
                 return $.ajax({
                     url: AJAX_URL,
                     type: 'POST',
-                    dataType: 'json',
-                    data: {
-                        tickets_id: ticketId,
-                        material_text: textoFinal
-                    }
+                    data: formData,
+                    processData: false, 
+                    contentType: false,
+                    dataType: 'json'
                 }).then(response => {
-                    // Verifica se a resposta existe
-                    if (!response) {
-                        throw new Error("O servidor respondeu com vazio.");
-                    }
-                    if (!response.success) {
-                        throw new Error(response.message || "Erro desconhecido no servidor.");
-                    }
+                    if (!response) throw new Error("Servidor não respondeu.");
+                    if (!response.success) throw new Error(response.message || "Erro desconhecido.");
                     return response;
                 }).catch(error => {
-                    console.error("Erro Ajax:", error); // Debug no F12
-
-                    let msg = "Erro desconhecido ao processar.";
-
-                    // Tratamento específico para o erro que você teve (Content-Length: 0)
-                    if (error.status === 200 && !error.responseJSON && error.responseText === "") {
-                        msg = "O servidor retornou uma resposta VAZIA. Verifique se o arquivo PHP existe e não tem erros de sintaxe.";
-                    }
-                    // Erro de Parse (JSON inválido)
-                    else if (error.status === 200 && error.parsererror) {
-                        msg = "O servidor retornou dados inválidos (não é JSON). Pode ser um erro PHP fatal.";
-                    }
-                    // Erro retornado pelo nosso PHP (throw new Error)
-                    else if (error.responseJSON && error.responseJSON.message) {
-                        msg = error.responseJSON.message;
-                    }
-                    // Erro lançado manualmente no Javascript
-                    else if (error.message) {
-                        msg = error.message;
-                    }
-
+                    console.error("Erro Ajax:", error);
+                    let msg = "Erro desconhecido.";
+                    if (error.responseJSON && error.responseJSON.message) msg = error.responseJSON.message;
+                    else if (error.message) msg = error.message;
                     Swal.showValidationMessage(`Falha: ${msg}`);
                 });
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire('Sucesso!', 'Lista enviada para o Almoxarifado.', 'success').then(() => {
-                    location.reload();
-                });
+                Swal.fire('Sucesso!', 'Solicitação enviada.', 'success').then(() => location.reload());
             }
         });
     }
